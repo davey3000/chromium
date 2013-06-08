@@ -23,8 +23,6 @@ class GamepadSharedMemoryReader {
   base::SharedMemoryHandle renderer_shared_memory_handle_;
   scoped_ptr<base::SharedMemory> renderer_shared_memory_;
   GamepadHardwareBuffer* gamepad_hardware_buffer_;
-
-  bool ever_interacted_with_;
 };
 
 }  // namespace content
