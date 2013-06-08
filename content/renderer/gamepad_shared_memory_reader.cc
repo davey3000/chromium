@@ -15,8 +15,7 @@
 namespace content {
 
 GamepadSharedMemoryReader::GamepadSharedMemoryReader()
-    : gamepad_hardware_buffer_(NULL),
-      ever_interacted_with_(false) {
+    : gamepad_hardware_buffer_(NULL) {
   CHECK(RenderThread::Get()->Send(new GamepadHostMsg_StartPolling(
       &renderer_shared_memory_handle_)));
   // If we don't get a valid handle from the browser, don't try to Map (we're
@@ -73,19 +72,6 @@ void GamepadSharedMemoryReader::SampleGamepads(WebKit::WebGamepads& gamepads) {
 
   // New data was read successfully, copy it into the output buffer.
   memcpy(&gamepads, &read_into, sizeof(gamepads));
-
-  if (!ever_interacted_with_) {
-    if (GamepadsHaveUserGesture(gamepads)) {
-      ever_interacted_with_ = true;
-    } else {
-      // Clear the connected flag if the user hasn't interacted with any of the
-      // gamepads to prevent fingerprinting. The actual data is not cleared.
-      // WebKit will only copy out data into the JS buffers for connected
-      // gamepads so this is sufficient.
-      for (unsigned i = 0; i < WebKit::WebGamepads::itemsLengthCap; i++)
-        gamepads.items[i].connected = false;
-    }
-  }
 }
 
 GamepadSharedMemoryReader::~GamepadSharedMemoryReader() {
